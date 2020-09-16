@@ -13,8 +13,8 @@ dependencies:
   sqflite: ^1.3.0
   sembast_sqflite: ^0.2.0+2
   sembast: ^2.4.5
-  fhir:
-    path: /home/grey/dev/fhir
+  path_provider: ^1.6.11
+  fhir: ^0.0.5
 
 
 dev_dependencies:
