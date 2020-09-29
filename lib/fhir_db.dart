@@ -35,7 +35,8 @@ class FhirDb {
 
   Future _openDatabase() async {
     final appDocumentDir = await getApplicationDocumentsDirectory();
-    final dbPath = join(appDocumentDir.path, 'fhir.db');
+    // final dbPath = join(appDocumentDir.path, 'fhir.db');
+    final dbPath = './test/fhir.db';
     final dbFactory = getDatabaseFactorySqflite(sqflite.databaseFactory);
     final database = await dbFactory.openDatabase(dbPath);
     _dbOpenCompleter.complete(database);
