@@ -1,10 +1,8 @@
 import 'dart:async';
 
-import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:fhir_db/encryption.dart';
 import 'package:sembast/sembast.dart';
-import 'package:sembast_sqflite/sembast_sqflite.dart';
-import 'package:sqflite/sqflite.dart' as sqflite;
+import 'package:sembast/sembast_io.dart';
 
 class FhirDb {
   FhirDb._();
@@ -34,11 +32,9 @@ class FhirDb {
   }
 
   Future _openDatabase() async {
-    final appDocumentDir = await getApplicationDocumentsDirectory();
-    // final dbPath = join(appDocumentDir.path, 'fhir.db');
+    var codec = getEncryptSembastCodec(password: 'my password');
     final dbPath = './test/fhir.db';
-    final dbFactory = getDatabaseFactorySqflite(sqflite.databaseFactory);
-    final database = await dbFactory.openDatabase(dbPath);
+    final database = await databaseFactoryIo.openDatabase(dbPath, codec: codec);
     _dbOpenCompleter.complete(database);
   }
 }
