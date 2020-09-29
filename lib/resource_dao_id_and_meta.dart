@@ -7,7 +7,7 @@ Meta _updateMetaVersion(Meta oldMeta) {
   final version =
       oldMeta == null ? 1 : int.parse(oldMeta.versionId.toString()) + 1;
   return Meta(
-    lastUpdated: Instant(DateTime.now()),
+    lastUpdated: Instant(DateTime.now().toUtc()),
     versionId: Id(version.toString()),
   );
 }
