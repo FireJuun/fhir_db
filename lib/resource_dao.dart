@@ -22,8 +22,8 @@ class ResourceDao {
     if (!resourceTypes.contains(resourceType)) {
       resourceTypes.add(resourceType);
     }
-    typeStore.record('resourceTypes').delete(await _db);
-    typeStore.record('resourceTypes').put(await _db, resourceTypes);
+    await typeStore.record('resourceTypes').delete(await _db);
+    await typeStore.record('resourceTypes').put(await _db, resourceTypes);
   }
 
   void _removeResourceTypes(List<String> types) async {
@@ -32,8 +32,8 @@ class ResourceDao {
         (await typeStore.record('resourceTypes').get(await _db))?.toList();
     resourceTypes ??= <String>[];
     types.forEach(resourceTypes.remove);
-    typeStore.record('resourceTypes').delete(await _db);
-    typeStore.record('resourceTypes').put(await _db, resourceTypes);
+    await typeStore.record('resourceTypes').delete(await _db);
+    await typeStore.record('resourceTypes').put(await _db, resourceTypes);
   }
 
   //get list of resourceTypes stored in DB
