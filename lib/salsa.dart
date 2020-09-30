@@ -7,13 +7,31 @@ import 'package:encrypt/encrypt.dart';
 import 'package:meta/meta.dart';
 import 'package:sembast/src/api/v2/sembast.dart';
 
-var _random = Random.secure();
-
-/// Random bytes generator
-Uint8List _randBytes(int length) {
-  return Uint8List.fromList(
-      List<int>.generate(length, (i) => _random.nextInt(256)));
-}
+/// Create a codec to use to open a database with encrypted stored data.
+///
+/// Hash (md5) of the password is used (but never stored) as a key to encrypt
+/// the data using the Salsa20 algorithm with a random (8 bytes) initial value
+///
+/// This is just used as a demonstration and should not be considered as a
+/// reference since its implementation (and storage format) might change.
+///
+/// No performance metrics has been made to check whether this is a viable
+/// solution for big databases.
+///
+/// The usage is then
+///
+/// ```dart
+/// // Initialize the encryption codec with a user password
+/// var codec = getEncryptSembastCodec(password: '[your_user_password]');
+/// // Open the database with the codec
+/// Database db = await factory.openDatabase(dbPath, codec: codec);
+///
+/// // ...your database is ready to use
+/// ```
+SembastCodec getEncryptSembastCodec({@required String password}) =>
+    SembastCodec(
+        signature: _encryptCodecSignature,
+        codec: _EncryptCodec(_generateEncryptPassword(password)));
 
 /// Generate an encryption password based on a user input password
 ///
@@ -22,6 +40,24 @@ Uint8List _generateEncryptPassword(String password) {
   var blob = Uint8List.fromList(md5.convert(utf8.encode(password)).bytes);
   assert(blob.length == 16);
   return blob;
+}
+
+/// Salsa20 based Codec
+class _EncryptCodec extends Codec<dynamic, String> {
+  _EncryptEncoder _encoder;
+  _EncryptDecoder _decoder;
+
+  _EncryptCodec(Uint8List passwordBytes) {
+    var salsa20 = Salsa20(Key(passwordBytes));
+    _encoder = _EncryptEncoder(salsa20);
+    _decoder = _EncryptDecoder(salsa20);
+  }
+
+  @override
+  Converter<String, dynamic> get decoder => _decoder;
+
+  @override
+  Converter<dynamic, String> get encoder => _encoder;
 }
 
 /// Salsa20 based encoder
@@ -70,49 +106,13 @@ class _EncryptDecoder extends Converter<String, dynamic> {
   }
 }
 
-/// Salsa20 based Codec
-class _EncryptCodec extends Codec<dynamic, String> {
-  _EncryptEncoder _encoder;
-  _EncryptDecoder _decoder;
-
-  _EncryptCodec(Uint8List passwordBytes) {
-    var salsa20 = Salsa20(Key(passwordBytes));
-    _encoder = _EncryptEncoder(salsa20);
-    _decoder = _EncryptDecoder(salsa20);
-  }
-
-  @override
-  Converter<String, dynamic> get decoder => _decoder;
-
-  @override
-  Converter<dynamic, String> get encoder => _encoder;
+/// Random bytes generator
+Uint8List _randBytes(int length) {
+  return Uint8List.fromList(
+      List<int>.generate(length, (i) => _random.nextInt(256)));
 }
+
+var _random = Random.secure();
 
 /// Our plain text signature
 const _encryptCodecSignature = 'encrypt';
-
-/// Create a codec to use to open a database with encrypted stored data.
-///
-/// Hash (md5) of the password is used (but never stored) as a key to encrypt
-/// the data using the Salsa20 algorithm with a random (8 bytes) initial value
-///
-/// This is just used as a demonstration and should not be considered as a
-/// reference since its implementation (and storage format) might change.
-///
-/// No performance metrics has been made to check whether this is a viable
-/// solution for big databases.
-///
-/// The usage is then
-///
-/// ```dart
-/// // Initialize the encryption codec with a user password
-/// var codec = getEncryptSembastCodec(password: '[your_user_password]');
-/// // Open the database with the codec
-/// Database db = await factory.openDatabase(dbPath, codec: codec);
-///
-/// // ...your database is ready to use
-/// ```
-SembastCodec getEncryptSembastCodec({@required String password}) =>
-    SembastCodec(
-        signature: _encryptCodecSignature,
-        codec: _EncryptCodec(_generateEncryptPassword(password)));

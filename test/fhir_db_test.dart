@@ -10,4 +10,14 @@ void main() async {
       birthDate: Date(DateTime.now()),
     ),
   );
+  final resultOrganization = await resourceDao.save(
+    Organization(
+      resourceType: 'Organization',
+      name: 'HSWT LLC',
+    ),
+  );
+  final resultObservation = await resourceDao.save(
+    Observation(
+        resourceType: 'Observation', code: CodeableConcept(text: 'text')),
+  );
 }

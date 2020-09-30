@@ -8,20 +8,43 @@ class ResourceDao {
   ResourceDao();
   StoreRef<String, Map<String, dynamic>> _resourceStore;
 
-  Future<Database> get _db async => FhirDb.instance.database;
+  Future<Database> _db() async => FhirDb.instance.database();
 
   //allows a store per resourceType (one for Patient, one for Observation, etc.)
   void _setStoreType(String resourceType) =>
       _resourceStore = stringMapStoreFactory.store(resourceType);
 
-  void _addResourceType(String resourceType) =>
-      FhirDb.instance.addResourceType(resourceType);
+  Future _addResourceType(String resourceType) async {
+    var typeStore = StoreRef<String, List<dynamic>>.main();
+    var resourceTypes =
+        (await typeStore.record('resourceTypes').get(await _db()))?.toList();
+    resourceTypes ??= <String>[];
+    if (!resourceTypes.contains(resourceType)) {
+      resourceTypes.add(resourceType);
+    }
+    typeStore.record('resourceTypes').delete(await _db());
+    typeStore.record('resourceTypes').put(await _db(), resourceTypes);
+  }
 
-  void _removeResourceTypes(List<String> types) =>
-      FhirDb.instance.removeResourceTypes(types);
+  void _removeResourceTypes(List<String> types) async {
+    var typeStore = StoreRef<String, List<dynamic>>.main();
+    var resourceTypes =
+        (await typeStore.record('resourceTypes').get(await _db()))?.toList();
+    resourceTypes ??= <String>[];
+    types.forEach(resourceTypes.remove);
+    typeStore.record('resourceTypes').delete(await _db());
+    typeStore.record('resourceTypes').put(await _db(), resourceTypes);
+  }
 
   //get list of resourceTypes stored in DB
-  List<String> _getResourceTypes() => FhirDb.instance.getResourceTypes();
+  Future<List<String>> _getResourceTypes() async {
+    var typeStore = StoreRef<String, List<dynamic>>.main();
+    var resourceTypes =
+        (await typeStore.record('resourceTypes').get(await _db()))?.toList();
+    var returnList = <String>[];
+    resourceTypes.forEach((s) => returnList.add(s as String));
+    return returnList;
+  }
 
   //checks if the resource already has an id, all resources downloaded should
   //have an id, and all resources already saved will have an id, so only brand
@@ -29,8 +52,8 @@ class ResourceDao {
   Future<Resource> save(Resource resource) async {
     if (resource != null) {
       if (resource?.resourceType != null) {
+        await _addResourceType(resource.resourceType);
         _setStoreType(resource.resourceType);
-        _addResourceType(resource.resourceType);
         return resource.id == null
             ? await _insert(resource)
             : await _update(resource);
@@ -49,7 +72,7 @@ class ResourceDao {
     final _newResource = _newVersion(resource);
     await _resourceStore
         .record(_newResource.id.toString())
-        .put(await _db, _newResource.toJson());
+        .put(await _db(), _newResource.toJson());
     return _newResource;
   }
 
@@ -61,20 +84,20 @@ class ResourceDao {
   Future<Resource> _update(Resource resource) async {
     final finder = Finder(filter: Filter.byKey(resource.id.toString()));
     final oldResource =
-        await _resourceStore.record(resource.id.toString()).get(await _db);
+        await _resourceStore.record(resource.id.toString()).get(await _db());
     if (oldResource == null) {
       await _resourceStore
           .record(resource.id.toString())
-          .put(await _db, resource.toJson());
+          .put(await _db(), resource.toJson());
       return resource;
     } else {
       _setStoreType('_history');
-      _addResourceType('_history');
-      await _resourceStore.add(await _db, oldResource);
+      await _addResourceType('_history');
+      await _resourceStore.add(await _db(), oldResource);
       _setStoreType(resource.resourceType);
       _addResourceType(resource.resourceType);
       final _newResource = _newVersion(resource);
-      await _resourceStore.update(await _db, _newResource.toJson(),
+      await _resourceStore.update(await _db(), _newResource.toJson(),
           finder: finder);
       return _newResource;
     }
@@ -87,17 +110,17 @@ class ResourceDao {
     final type = resourceType ?? resource?.resourceType ?? '';
     if (type.isNotEmpty) {
       _setStoreType(resourceType);
-      await _resourceStore.delete(await _db);
+      await _resourceStore.delete(await _db());
       _removeResourceTypes([resourceType]);
     }
   }
 
   //Deletes all resources, including historical versions
   Future deleteAllResources() async {
-    final resourceTypes = _getResourceTypes();
+    final resourceTypes = await _getResourceTypes();
     for (var type in resourceTypes) {
       _setStoreType(type);
-      await _resourceStore.delete(await _db);
+      await _resourceStore.delete(await _db());
     }
     _removeResourceTypes(resourceTypes);
   }
@@ -106,12 +129,12 @@ class ResourceDao {
   Future delete(Resource resource) async {
     _setStoreType(resource.resourceType);
     final finder = Finder(filter: Filter.equals('id', '${resource.id}'));
-    await _resourceStore.delete(await _db, finder: finder);
+    await _resourceStore.delete(await _db(), finder: finder);
   }
 
   //return all resources in the DB, including historical versions
   Future<List<Resource>> getAllResources() async {
-    final resourceTypes = _getResourceTypes();
+    final resourceTypes = await _getResourceTypes();
     final resourceList = <Resource>[];
     for (final resource in resourceTypes) {
       final partialList = await getAllSortedById(resourceType: resource);
@@ -153,7 +176,7 @@ class ResourceDao {
   //ultimate search function, must pass in finder
   Future<List<Resource>> _search(Finder finder) async {
     final recordSnapshots =
-        await _resourceStore.find(await _db, finder: finder);
+        await _resourceStore.find(await _db(), finder: finder);
 
     return recordSnapshots.map((snapshot) {
       final resource = Resource.fromJson(snapshot.value);
