@@ -5,7 +5,7 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:meta/meta.dart';
-import 'package:sembast/src/api/v2/sembast.dart';
+import 'package:sembast/sembast.dart';
 
 /// Create a codec to use to open a database with encrypted stored data.
 ///
@@ -28,7 +28,7 @@ import 'package:sembast/src/api/v2/sembast.dart';
 ///
 /// // ...your database is ready to use
 /// ```
-SembastCodec getEncryptSembastCodec({@required String password}) =>
+SembastCodec getEncryptSembastCodecSalsa20({@required String password}) =>
     SembastCodec(
         signature: _encryptCodecSignature,
         codec: _EncryptCodec(_generateEncryptPassword(password)));

@@ -3,7 +3,7 @@ import 'package:fhir_db/resource_dao.dart';
 
 void main() async {
   final ResourceDao resourceDao = ResourceDao();
-  final resultResource = await resourceDao.save(
+  final resultPatient = await resourceDao.save(
     Patient(
       resourceType: 'Patient',
       name: [HumanName(text: 'New Patient Name')],
@@ -20,4 +20,5 @@ void main() async {
     Observation(
         resourceType: 'Observation', code: CodeableConcept(text: 'text')),
   );
+  print('$resultPatient,$resultOrganization,$resultObservation');
 }
