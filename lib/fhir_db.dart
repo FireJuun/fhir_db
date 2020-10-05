@@ -24,10 +24,10 @@ class FhirDb {
     return _dbOpenCompleter.future;
   }
 
-  String _getPw() => 'my password';
+  // String _getPw() => 'my password';
 
   Future _openDatabase() async {
-    var codec = getEncryptSembastCodecAES(password: _getPw());
+    // var codec = getEncryptSembastCodecAES(password: _getPw());
     // var codec = getEncryptSembastCodecSalsa20(password: _getPw());
     // final dbPath = './test/fhir.db';
     // final database = await databaseFactoryIo.openDatabase(dbPath, codec: codec);
@@ -36,7 +36,7 @@ class FhirDb {
     final appDocumentDir = await getApplicationDocumentsDirectory();
     final dbPath = join(appDocumentDir.path, 'fhir.db');
     final dbFactory = getDatabaseFactorySqflite(sqflite.databaseFactory);
-    final database = await dbFactory.openDatabase(dbPath, codec: codec);
+    final database = await dbFactory.openDatabase(dbPath);
     _dbOpenCompleter.complete(database);
   }
 }
