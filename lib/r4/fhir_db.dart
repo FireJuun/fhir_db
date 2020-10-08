@@ -7,6 +7,7 @@ import 'package:sembast_sqflite/sembast_sqflite.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 
 import '../aes.dart';
+import '../secure_interface.dart';
 // import '../salsa.dart';
 
 class FhirDb {
@@ -24,19 +25,20 @@ class FhirDb {
     return _dbOpenCompleter.future;
   }
 
-  // String _getPw() => 'my password';
-
   Future _openDatabase() async {
-    // var codec = getEncryptSembastCodecAES(password: _getPw());
-    // var codec = getEncryptSembastCodecSalsa20(password: _getPw());
-    // final dbPath = './test/fhir.db';
-    // final database = await databaseFactoryIo.openDatabase(dbPath, codec: codec);
-    // _dbOpenCompleter.complete(database);
-
+    final pw = SecureInterface.getPw();
     final appDocumentDir = await getApplicationDocumentsDirectory();
-    final dbPath = join(appDocumentDir.path, 'r4fhir.db');
+    final dbPath = join(appDocumentDir.path, 'fhir.db');
     final dbFactory = getDatabaseFactorySqflite(sqflite.databaseFactory);
-    final database = await dbFactory.openDatabase(dbPath);
+
+    final codec =
+        pw == null || pw == '' ? null : getEncryptSembastCodecAES(password: pw);
+    // getEncryptSembastCodecSalsa20(password: pw);
+
+    final database = codec == null
+        ? await dbFactory.openDatabase(dbPath)
+        : await dbFactory.openDatabase(dbPath, codec: codec);
+
     _dbOpenCompleter.complete(database);
   }
 }
