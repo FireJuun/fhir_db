@@ -1,5 +1,5 @@
 name: fhir_db
-description: Using the Sembast DB to store fhir resources
+description: Using Sembast and SQFlite as the DB to store fhir resources
 version: 0.0.1
 author:
 homepage:
@@ -20,5 +20,4 @@ dependencies:
   crypto: '>=2.0.6'
   path_provider: ^1.6.11
 
-  
 dev_dependencies:
