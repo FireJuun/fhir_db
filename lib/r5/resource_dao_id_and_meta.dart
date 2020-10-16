@@ -566,10 +566,10 @@ Resource _newVersion(Resource resource) {
       return (resource as TestScript).copyWith(
           id: _getId(resource.hashCode, resource.id),
           meta: _updateMetaVersion(resource.meta));
-    case 'Topic':
-      return (resource as Topic).copyWith(
-          id: _getId(resource.hashCode, resource.id),
-          meta: _updateMetaVersion(resource.meta));
+    // case 'Topic':
+    //   return (resource as Topic).copyWith(
+    //       id: _getId(resource.hashCode, resource.id),
+    //       meta: _updateMetaVersion(resource.meta));
     case 'ValueSet':
       return (resource as ValueSet).copyWith(
           id: _getId(resource.hashCode, resource.id),
