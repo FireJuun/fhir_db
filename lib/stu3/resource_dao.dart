@@ -5,10 +5,16 @@ import 'fhir_db.dart';
 part 'resource_dao_id_and_meta.dart';
 
 class Stu3Dao {
-  Stu3Dao();
+  Stu3Dao({String password}) {
+    _pw = password;
+  }
   StoreRef<String, Map<String, dynamic>> _resourceStore;
+  String _pw;
 
-  Future<Database> get _db => FhirDb.instance.database;
+  Future<Database> get _db => Stu3FhirDb.instance.database(_pw);
+
+  Future updatePw(String newPw) =>
+      Stu3FhirDb.instance.updatePassword(_pw, newPw);
 
   //allows a store per resourceType (one for Patient, one for Observation, etc.)
   void _setStoreType(String resourceType) =>

@@ -1,7 +1,7 @@
 part of 'resource_dao.dart';
 
 Id _getId(int resourcehashCode, Id id) =>
-    id ?? Id('vigor-$resourcehashCode-${DateTime.now().hashCode}');
+    id ?? Id('fhirfli-$resourcehashCode-${DateTime.now().hashCode}');
 
 Meta _updateMetaVersion(Meta oldMeta) {
   final version =

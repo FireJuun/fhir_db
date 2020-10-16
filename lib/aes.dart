@@ -36,10 +36,10 @@ SembastCodec getEncryptSembastCodecAES({@required String password}) =>
 
 /// Generate an encryption password based on a user input password
 ///
-/// It uses sha256 which generates a 16 bytes blob, size needed for AES-256
+/// It uses sha256 which generates a 32 bytes blob, size needed for AES-256
 Uint8List _generateEncryptPassword(String password) {
   var blob = Uint8List.fromList(sha256.convert(utf8.encode(password)).bytes);
-  assert(blob.length == 16);
+  assert(blob.length == 32);
   return blob;
 }
 

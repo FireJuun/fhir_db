@@ -5,10 +5,16 @@ import 'fhir_db.dart';
 part 'resource_dao_id_and_meta.dart';
 
 class Dstu2Dao {
-  Dstu2Dao();
+  Dstu2Dao({String password}) {
+    _pw = password;
+  }
   StoreRef<String, Map<String, dynamic>> _resourceStore;
+  String _pw;
 
-  Future<Database> get _db => FhirDb.instance.database;
+  Future<Database> get _db => Dstu2FhirDb.instance.database(_pw);
+
+  Future updatePw(String newPw) =>
+      Dstu2FhirDb.instance.updatePassword(_pw, newPw);
 
   //allows a store per resourceType (one for Patient, one for Observation, etc.)
   void _setStoreType(String resourceType) =>
