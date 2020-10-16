@@ -14,8 +14,10 @@ dependencies:
   sembast_sqflite: ^0.2.0+2
   sembast: ^2.4.5
   fhir: ^0.0.8
-  encrypt: '>=3.1.0'
-  crypto: '>=2.0.6'
+  encrypt: ^4.1.0
+  crypto: ^2.1.5
   path_provider: ^1.6.11
+  meta: ^1.2.3
+  path: ^1.7.0
 
 dev_dependencies:

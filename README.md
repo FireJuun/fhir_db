@@ -117,3 +117,20 @@ searchFunction(
         'Immunization', 'patient.reference', 'Patient/$patientId');
 ```
 This function will search through all entries in the ```'Immunization'``` store. It will look at all ```'patient.reference'``` fields, and return any that match ```'Patient/$patientId'```.
+
+The last thing I'll mention is that this is a password protected db, using AES-256 encryption (although it can also use Salsa20). Anytime you use the db, you have the option of using a password for encryption/decryption. Remember, if you setup the database using encryption, you will only be able to access it using that same password. When you're ready to change the password, you will need to call the update password function. If we again assume we created a change password method in our interface, it might look something like this:
+```
+class IFhirDb {
+  IFhirDb();
+  final ResourceDao resourceDao = ResourceDao();
+  ...
+    Future<Either<DbFailure, Unit>> updatePassword(String oldPassword, String newPassword) async {
+    try {
+      await resourceDao.updatePw(oldPassword, newPassword);
+    } catch (error) {
+      return left(DbFailure.unableToUpdatePassword(error: error.toString()));
+    }
+    return right(Unit);
+  }
+```
+You don't have to use a password, and in that case, it will save the db file as plain text. If you want to add a password later, it will encrypt it at that time. 
