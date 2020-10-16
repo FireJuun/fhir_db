@@ -76,8 +76,10 @@ class Stu3FhirDb {
         : getEncryptSembastCodecAES(password: newPw);
     // getEncryptSembastCodecSalsa20(password: newPw);
 
+    /// create new database using new Codec
     await importDatabase(exportMap, dbFactory, dbPath, codec: newCodec);
 
+    /// delete temporary file
     File(tempPath).delete();
   }
 }
