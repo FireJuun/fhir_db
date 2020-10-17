@@ -1,6 +1,6 @@
 # FHIR_DB
 
-This is really just a wrapper around [Sembast_SQFLite](https://pub.dev/packages/sembast_sqflite) - so all of the heavy lifting was done by [Alex Tekartik](http://www.tekartik.com/). I highly recommend that if you have any questions about working with this package that you take a look at [Sembast](https://pub.dev/packages/sembast). He's also just a super nice guy, and even answered a question for me when I was deciding which [sembast version](https://github.com/tekartik/sembast.dart/issues/183) to use. As usual, ResoCoder also has a [good tutorial](https://resocoder.com/2019/04/06/flutter-nosql-database-sembast-tutorial-w-bloc/). 
+This is really just a wrapper around [Sembast_SQFLite](https://pub.dev/packages/sembast_sqflite) - so all of the heavy lifting was done by [Alex Tekartik](https://www.tekartik.com/). I highly recommend that if you have any questions about working with this package that you take a look at [Sembast](https://pub.dev/packages/sembast). He's also just a super nice guy, and even answered a question for me when I was deciding which [sembast version](https://github.com/tekartik/sembast.dart/issues/183) to use. As usual, ResoCoder also has a [good tutorial](https://resocoder.com/2019/04/06/flutter-nosql-database-sembast-tutorial-w-bloc/). 
 
 ## Using the Db
 
