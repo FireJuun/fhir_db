@@ -2,6 +2,7 @@
 
 * Made changes to links in readme
 * Updated dependencies
+* Added documentation
 
 ## [0.0.1]
 
