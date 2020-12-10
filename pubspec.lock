@@ -81,10 +81,12 @@ packages:
   fhir:
     dependency: "direct main"
     description:
-      name: fhir
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.8"
+      path: "."
+      ref: enable_when_operators
+      resolved-ref: "6bad04b4c16b27aa563433b2827b523f05320161"
+      url: "https://github.com/FireJuun/fhir.git"
+    source: git
+    version: "0.0.11"
   file:
     dependency: transitive
     description:
